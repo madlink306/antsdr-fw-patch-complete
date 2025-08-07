@@ -1,0 +1,11 @@
+export CROSS_COMPILE=arm-linux-gnueabihf-
+export PATH=$PATH:/home/madlink306/Desktop/antsdr_e200/Toolchain/gcc-linaro-7.3.1-2018.05-i686_arm-linux-gnueabihf/bin
+export VIVADO_SETTINGS=/tools/Xilinx/Vivado/2023.2/settings64.sh
+
+export TARGET=e200
+
+cd antsdr-fw-patch
+
+sh patch.sh e200
+
+ls -AGhl build

@@ -1,0 +1,67 @@
+diff --git a/plutosdr-fw/linux/drivers/misc/Kconfig b/plutosdr-fw/linux/drivers/misc/Kconfig
+index xxxx..yyyy 100644
+--- a/plutosdr-fw/linux/drivers/misc/Kconfig
++++ b/plutosdr-fw/linux/drivers/misc/Kconfig
+@@ -579,5 +579,6 @@ source "drivers/misc/habanalabs/Kconfig"
+ source "drivers/misc/uacce/Kconfig"
+ source "drivers/misc/pvpanic/Kconfig"
+ source "drivers/misc/mchp_pci1xxxx/Kconfig"
++source "drivers/misc/antsdr_dma/Kconfig"
+ endmenu
+ 
+diff --git a/plutosdr-fw/linux/drivers/misc/Makefile b/plutosdr-fw/linux/drivers/misc/Makefile
+index xxxx..yyyy 100644
+--- a/plutosdr-fw/linux/drivers/misc/Makefile
++++ b/plutosdr-fw/linux/drivers/misc/Makefile
+@@ -68,3 +68,4 @@ obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+ obj-$(CONFIG_TMR_MANAGER)	+= xilinx_tmr_manager.o
+ obj-$(CONFIG_TMR_INJECT)	+= xilinx_tmr_inject.o
+ obj-$(CONFIG_XILINX_PUF)        += xilinx_puf.o
++obj-$(CONFIG_ANTSDR_DMA)	+= antsdr_dma/
+
+diff --git a/plutosdr-fw/linux/arch/arm/configs/zynq_e200_defconfig b/plutosdr-fw/linux/arch/arm/configs/zynq_e200_defconfig
+index xxxx..yyyy 100644
+--- a/plutosdr-fw/linux/arch/arm/configs/zynq_e200_defconfig
++++ b/plutosdr-fw/linux/arch/arm/configs/zynq_e200_defconfig
+@@ -248,6 +248,7 @@ CONFIG_UIO_PDRV_GENIRQ=y
+ CONFIG_UIO_DMEM_GENIRQ=y
+ CONFIG_UIO_XILINX_APM=y
++CONFIG_ANTSDR_DMA=y
+ CONFIG_STAGING=y
+ CONFIG_R8712U=y
+ CONFIG_R8188EU=y
+
+diff --git a/plutosdr-fw/linux/arch/arm/boot/dts/zynq-e200.dtsi b/plutosdr-fw/linux/arch/arm/boot/dts/zynq-e200.dtsi
+index xxxx..yyyy 100644
+--- a/plutosdr-fw/linux/arch/arm/boot/dts/zynq-e200.dtsi
++++ b/plutosdr-fw/linux/arch/arm/boot/dts/zynq-e200.dtsi
+@@ -206,6 +206,13 @@
+ 		mwipcore@43c00000 {
+ 			compatible = "mathworks,mwipcore-axi4lite-v1.00";
+ 			reg = <0x43c00000 0xffff>;
+ 		};
++		
++		antsdr_dma: antsdr-dma@0 {
++			compatible = "antsdr,dma-udp";
++			dmas = <&rx_dma 0>;
++			dma-names = "rx";
++			enable-gpios = <&gpio0 54 0>; /* Map to AXI GPIO output */
++		};
+ 	};
+ };
+
+diff --git a/plutosdr-fw/Makefile b/plutosdr-fw/Makefile
+index xxxx..yyyy 100644
+--- a/plutosdr-fw/Makefile
++++ b/plutosdr-fw/Makefile
+@@ -245,6 +245,11 @@ legal-info: buildroot/output/images/rootfs.cpio.gz
+ 	tar czvf build/legal-info-$(VERSION).tar.gz -C buildroot/output legal-info
+ endif
+ 
++antsdr-test: $(TOOLCHAIN)
++	$(TOOLS_PATH) $(CROSS_COMPILE)gcc -Wall -Wextra -O2 -std=gnu99 -o build/antsdr_dma_test antsdr_dma_test.c
++
++.PHONY: antsdr-test
++
+ git-update-all:
+ 	git submodule update --recursive --remote
