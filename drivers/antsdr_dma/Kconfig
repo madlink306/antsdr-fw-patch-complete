@@ -1,0 +1,30 @@
+config ANTSDR_DMA
+	tristate "ANTSDR DMA to UDP streaming driver"
+	depends on DMA_ENGINE && NET && XILINX_DMA
+	help
+	  Driver for ANTSDR DMA to UDP streaming functionality.
+	  
+	  This driver provides a character device interface for streaming
+	  data from FPGA via Xilinx AXI DMA to PC over UDP. It supports 
+	  interrupt-based transfers and automatic UDP packet transmission.
+	  
+	  Requires Xilinx AXI DMA IP core in the FPGA design.
+	  
+	  To compile this driver as a module, choose M here: the module
+	  will be called antsdr_dma.
+
+config ANTSDR_DMA_DIRECT
+	tristate "ANTSDR DMA to UDP streaming driver (Direct Register Access)"
+	depends on NET
+	help
+	  Driver for ANTSDR DMA to UDP streaming functionality using direct
+	  register access instead of the DMA engine framework.
+	  
+	  This driver provides a character device interface for streaming
+	  data from FPGA via Xilinx AXI DMA to PC over UDP. It uses direct
+	  register access for maximum control and performance.
+	  
+	  Requires Xilinx AXI DMA IP core in the FPGA design.
+	  
+	  To compile this driver as a module, choose M here: the module
+	  will be called antsdr_dma_direct.
