@@ -27,25 +27,28 @@ This repository contains the complete firmware modification suite for the ANTSDR
 
 ```
 antsdr-fw-patch/
-├── plutosdr-fw/                    # Modified PlutoSDR firmware base
-│   ├── linux/drivers/misc/antsdr_dma/  # High-performance DMA driver
-│   ├── buildroot/                  # Build system modifications
-│   └── hdl/                        # FPGA hardware description
-├── patch/                          # Patch files for integration
-├── PC_app/                         # PC remote control applications
-├── README.md                       # Original project documentation
-├── GPIO_INTEGRATION_COMPLETE.md    # GPIO system documentation
-├── IMPLEMENTATION_SUMMARY.md       # Complete implementation guide
+├── drivers/antsdr_dma/             # High-performance DMA driver
+│   ├── antsdr_dma.c               # Main DMA driver with optimizations
+│   ├── Makefile                   # Build configuration
+│   └── Kconfig                    # Kernel configuration
+├── antsdr_app/                    # Remote control application
+│   ├── antsdr_dma_remote_control.c
+│   └── antsdr_dma_remote_control
+├── patch/                         # Patch files for integration
+├── deploy_module.sh               # Deployment script for ANTSDR E200
+├── udp_receiver.py               # Performance testing utility
+├── antsdr_remote_client.py       # Remote control client
+├── README.md                     # Original project documentation
+├── GPIO_INTEGRATION_COMPLETE.md  # GPIO system documentation
+├── IMPLEMENTATION_SUMMARY.md     # Complete implementation guide
 └── Documentation files...
 ```
 
-### 🔧 Main Branch: `my_antsdr`
-
-The `my_antsdr` branch contains all the latest optimizations and represents the stable, tested version of the ANTSDR E200 enhancements.
+**Note**: The repository structure has been simplified to remove the problematic submodule structure. All essential files are now directly accessible without submodule issues.
 
 ## 📊 Technical Specifications
 
-### DMA Driver Optimizations (`linux/drivers/misc/antsdr_dma/antsdr_dma.c`)
+### DMA Driver Optimizations (`drivers/antsdr_dma/antsdr_dma.c`)
 - **Frame Size**: 403 words (1612 bytes) matching FPGA output exactly
 - **Buffer Count**: 16 DMA buffers for enhanced throughput
 - **Burst Size**: 64-word bursts for optimal memory access
@@ -73,13 +76,13 @@ The `my_antsdr` branch contains all the latest optimizations and represents the 
 sudo apt-get install build-essential gcc-arm-linux-gnueabihf
 ```
 
-### Building the Firmware
+### Building the DMA Driver
 ```bash
 # Build the DMA driver module
-cd plutosdr-fw
-make antsdr_dma.ko
+cd drivers/antsdr_dma
+make
 
-# Deploy to ANTSDR E200 device
+# Or use the deployment script (recommended)
 ./deploy_module.sh
 ```
 
@@ -120,6 +123,17 @@ python3 udp_receiver.py
 4. **Stack Overflow Fix** - Dynamic memory allocation implementation
 5. **Threaded Processing** - Workqueue-based frame processing
 6. **Performance Tuning** - Burst optimization and batch processing
+7. **Repository Structure Fix** - Removed problematic submodules
+
+## 🔧 Repository Changes
+
+### Version History
+- **v1.0**: Initial GPIO integration and remote control
+- **v2.0**: DMA performance optimizations 
+- **v3.0**: Stack overflow fix and threaded processing
+- **v3.1**: Repository structure simplification (removed submodules)
+
+The repository structure was simplified to resolve GitHub submodule linking issues. Previously, the `plutosdr-fw` submodule pointed to commits that didn't exist in the original repository, causing broken links. Now all essential files are directly included in the repository structure.
 
 ## 📚 Documentation
 
@@ -129,20 +143,6 @@ python3 udp_receiver.py
 - **`IMPLEMENTATION_SUMMARY.md`** - Complete technical implementation
 - **`DEPLOYMENT_GUIDE.md`** - Deployment procedures
 - **`FIRMWARE_UPDATE_GUIDE.md`** - Firmware update procedures
-
-## 🏗️ Architecture
-
-### DMA Pipeline
-```
-FPGA → DMA Engine → Ring Buffers → Frame FIFO → Worker Thread → UDP Transmission
-(403w)   (16 buf)    (optimized)   (256 frames)   (50 batch)    (to PC)
-```
-
-### Control Flow
-```
-PC Remote → UDP Commands → ANTSDR Control → GPIO → FPGA Configuration
-         ← UDP Status   ← Statistics    ← Status ← Data Generation
-```
 
 ## 🎯 Use Cases
 
@@ -161,4 +161,4 @@ This project represents comprehensive firmware optimization work. Contributions 
 
 ---
 
-**Note**: This repository contains the complete ANTSDR E200 firmware patch project with all optimizations, documentation, and supporting tools. The `my_antsdr` branch represents the latest stable implementation with all performance enhancements.
+**Note**: This repository contains the complete ANTSDR E200 firmware patch project with all optimizations, documentation, and supporting tools. The repository structure has been simplified for better accessibility and to resolve submodule linking issues.
