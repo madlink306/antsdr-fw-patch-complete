@@ -9,3 +9,5 @@ cd antsdr-fw-patch
 sh patch.sh e200
 
 ls -AGhl build
+
+minicom -D /dev/ttyUSB0 -b 115200
